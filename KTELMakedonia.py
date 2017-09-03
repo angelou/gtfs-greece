@@ -9,6 +9,7 @@ import re
 from geopy.geocoders import Nominatim
 import datetime
 import transitfeed
+import time
 
 driver = webdriver.Chrome()
 geolocator = Nominatim()
@@ -25,10 +26,9 @@ schedule.AddAgency(agency_id = "MakedoniaIntercity", \
                    timezone = "Europe/Athens", \
                    url = "http://ktelmacedonia.gr")
 
-first_stop_written = False
-
-
-for route_id in range(1,40):
+station_list = []
+station_objects = []
+for route_id in range(1, 40):
 
     url = start_url % route_id
     print "\n\nFetching %s" % url
@@ -39,103 +39,140 @@ for route_id in range(1,40):
     except selenium.common.exceptions.NoSuchElementException:
         continue
 
-    first_stop = lineSelector_from.options[0].text.strip()
-    location = geolocator.geocode(first_stop.encode("utf-8") + ", Greece", timeout = None)
+    # Retrieve the county
+    county = driver.find_element_by_xpath('//*[@id="into-title-1"]/span/strong').text.strip().split()[0]
 
-    print("Location for %s: %s, %s" % (first_stop.encode("utf-8"), location.latitude, location.longitude))
+    for departure_line_index, departure_line in enumerate(lineSelector_from.options):
 
-    if not first_stop_written:
+        print("\nSelecting departure line %s" % departure_line.text.encode("utf-8").strip())
+        lineSelector_from.select_by_index(departure_line_index)
 
-        first_stop_obj = schedule.AddStop(lng = location.longitude, \
-                                          lat = location.latitude, \
-                                          name = first_stop,
-                                          stop_id=first_stop.upper())
-        first_stop_written = True
+        first_stop = departure_line.text.strip()
 
-    # Select one of the available lines
-    lineSelector = Select(driver.find_element_by_xpath("//select[@class='local-station'][@name='to']"))
+        if first_stop not in station_list:
+            location = geolocator.geocode(first_stop.encode("utf-8") + ", Greece", timeout = None)
+            if not location:
+                # Try again with county
+                location = geolocator.geocode(first_stop.encode("utf-8") + " " + county + ", Greece", timeout = None)
+                if not location:
+                    print("### COULD NOT FIND LOCATION FOR %s" % first_stop.encode("utf-8"))
+                    continue
 
-    print("\n\nFound %s lines" % (len(lineSelector.options) - 1))
+            print("Location for %s: %s, %s" % (first_stop.encode("utf-8"), location.latitude, location.longitude))
 
-    for line_index, line in enumerate(lineSelector.options[1:]):
+            first_stop_obj = schedule.AddStop(lng = location.longitude,
+                                              lat = location.latitude,
+                                              name = first_stop.encode("utf-8"),
+                                              stop_id = first_stop.encode("utf-8").upper())
+            station_list.append(first_stop)
+            station_objects.append(first_stop_obj)
+        else:
+            first_stop_obj = station_objects[station_list.index(first_stop)]
 
-        print("\nSelecting line %s" % line.text.strip())
-        lineSelector.select_by_index(line_index + 1)
+        # Select one of the available lines
+        lineSelector = Select(driver.find_element_by_xpath("//select[@class='local-station'][@name='to']"))
 
-        # Wait for the page to be updated
-        driver.implicitly_wait(10)
+        if departure_line_index == 0:
+            lineSelector_options = lineSelector.options[1:]
+        else:
+            lineSelector_options = lineSelector.options
 
-        next_stop = line.text.strip()
+        print("\n\nFound %s lines" % (len(lineSelector_options)))
 
-        location = geolocator.geocode(next_stop.encode("utf-8") + ", Greece", timeout = None)
+        for line_index, line in enumerate(lineSelector_options):
 
-        if not location:
-            print("### COULD NOT FIND LOCATION FOR %s" % next_stop)
-            continue
+            print("\nSelecting arrival line %s" % line.text.encode("utf-8").strip())
 
-        print("Location for %s: %s, %s" % (next_stop, location.latitude, location.longitude))
+            if departure_line_index == 0:
+                lineSelector.select_by_index(line_index + 1)
 
-        next_stop_obj = schedule.AddStop(lng = location.longitude, \
-                                         lat = location.latitude, \
-                                         name = next_stop)
-        route_id = first_stop + "-" + next_stop
+            # Wait for the page to be updated
+            driver.implicitly_wait(10)
 
-        route = schedule.AddRoute(short_name= "", \
-                                  long_name=first_stop.upper()+"-"+next_stop.upper(), \
-                                  route_type="Bus")
+            next_stop = line.text.strip()
 
-        # Read the values of the table
-        route_rows = driver.find_elements_by_xpath("//tr[@class='routerow']")
+            if next_stop not in station_list:
+                location = geolocator.geocode(next_stop.encode("utf-8") + ", Greece", timeout = None)
+                if not location:
+                    # Try again with county
+                    location = geolocator.geocode(next_stop.encode("utf-8") + " " + county + ", Greece", timeout = None)
+                    if not location:
+                        print("### COULD NOT FIND LOCATION FOR %s" % next_stop.encode("utf-8"))
+                        continue
 
-        print("\nFound %s route rows" % len(route_rows))
+                print("Location for %s, %s: %s, %s" % (next_stop, county, location.latitude, location.longitude))
 
-        service_ids = []
-        for row in route_rows:
-            print("Row: %s" % row.text.strip())
-            info = row.text.strip().split()
-            print("Info: %s" % info)
+                next_stop_obj = schedule.AddStop(lng = location.longitude,
+                                                 lat = location.latitude,
+                                                 name = next_stop.encode("utf-8"),
+                                                 stop_id = next_stop.encode("utf-8").upper())
 
-            if (len(info) < 10) or (":" not in info[0]):
-                print("### PROBLEM WITH LINE ###")
-                continue
+                station_list.append(next_stop)
+                station_objects.append(next_stop_obj)
 
-            days = "".join(info[1:8]).replace("-","")
-            service_id =  "%s-%s" % (route_id, days)
-            if service_id not in service_ids:
-                service_ids.append(service_id)
-
-                service_period = transitfeed.ServicePeriod(service_id)
-                print("Service days: %s" % info[1:8])
-                for day in info[1:8]:
-                    if day != "-":
-                        service_period.SetDayOfWeekHasService(int(day) - 1)
-
-                today = datetime.datetime.today()
-                service_period.SetStartDate(today.strftime('%Y%m%d'))
-                service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d'))
-                schedule.AddServicePeriodObject(service_period)
-
-            trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
-
-            print("Departure: %s" % info[0])
-            print("Arrival: %s" % info[8])
-
-            departure_time = info[0]
-            arrival_time = info[8]
-
-            if departure_time.split(":")[0] == "24":
-                time1 = "00:" + departure_time.split(":")[1] + ":00"
             else:
-                time1 = datetime.datetime.strptime(departure_time, "%H:%M").strftime("%H:%M:%S")
+                next_stop_obj = station_objects[station_list.index(next_stop)]
 
-            if int(arrival_time.split(":")[0]) < int(departure_time.split(":")[0]):
-                time2 = str(24 + int(arrival_time.split(":")[0])) + ":" + arrival_time.split(":")[1] + ":00"
-            else:
-                time2 = datetime.datetime.strptime(arrival_time, "%H:%M").strftime("%H:%M:%S")
+            route_id = first_stop + "-" + next_stop
 
-            trip.AddStopTime(first_stop_obj, stop_time=time1)
-            trip.AddStopTime(next_stop_obj,  stop_time=time2)
+            route = schedule.AddRoute(short_name= "", \
+                                      long_name=first_stop.upper()+"-"+next_stop.upper(), \
+                                      route_type="Bus")
+
+            # Read the values of the table
+            route_rows = driver.find_elements_by_xpath("//tr[@class='routerow']")
+
+            print("\nFound %s route rows" % len(route_rows))
+
+            service_ids = []
+            for row in route_rows:
+                print("Row: %s" % row.text.encode("utf-8").strip())
+                info = row.text.encode("utf-8").strip().split()
+                print("Info: %s" % info)
+
+                if (len(info) < 10) or (":" not in info[0]):
+                    print("### PROBLEM WITH LINE ###")
+                    continue
+
+                days = "".join(info[1:8]).replace("-","")
+                service_id =  "%s-%s" % (route_id, days)
+                if service_id not in service_ids:
+                    service_ids.append(service_id)
+
+                    service_period = transitfeed.ServicePeriod(service_id)
+                    print("Service days: %s" % info[1:8])
+                    for day in info[1:8]:
+                        if day != "-":
+                            service_period.SetDayOfWeekHasService(int(day) - 1)
+
+                    today = datetime.datetime.today()
+                    service_period.SetStartDate(today.strftime('%Y%m%d'))
+                    service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d'))
+                    schedule.AddServicePeriodObject(service_period)
+
+                trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
+
+                print("Departure: %s" % info[0])
+                print("Arrival: %s" % info[8])
+
+                departure_time = info[0]
+                arrival_time = info[8]
+
+                if departure_time.split(":")[0] == "24":
+                    time1 = "00:" + departure_time.split(":")[1] + ":00"
+                else:
+                    time1 = datetime.datetime.strptime(departure_time, "%H:%M").strftime("%H:%M:%S")
+
+                if int(arrival_time.split(":")[0]) < int(departure_time.split(":")[0]):
+                    time2 = str(24 + int(arrival_time.split(":")[0])) + ":" + arrival_time.split(":")[1] + ":00"
+                else:
+                    time2 = datetime.datetime.strptime(arrival_time, "%H:%M").strftime("%H:%M:%S")
+
+                trip.AddStopTime(first_stop_obj, stop_time=time1)
+                trip.AddStopTime(next_stop_obj,  stop_time=time2)
 
 schedule.Validate()
 
 schedule.WriteGoogleTransitFeed(gtfs_file)
+
+driver.quit()
