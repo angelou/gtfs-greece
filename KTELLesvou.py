@@ -37,7 +37,7 @@ print("Location for Station A: %s, %s" % (first_stop_location.latitude, first_st
 first_stop_obj = schedule.AddStop(lng = first_stop_location.longitude, \
                                   lat = first_stop_location.latitude, \
                                   name = first_stop_text,
-                                  stop_id=first_stop_text.upper())
+                                  stop_id = first_stop_text.upper())
 
 # Find the divs holding destination and routes
 routes = driver.find_elements_by_xpath("//div[@id='places']/ul")
