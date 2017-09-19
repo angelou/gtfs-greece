@@ -136,10 +136,11 @@ for route_id in range(1, 40):
 
                 days = "".join(info[1:8]).replace("-","")
                 service_id =  "%s-%s" % (route_id, days)
+                service_period = transitfeed.ServicePeriod(service_id)
+
                 if service_id not in service_ids:
                     service_ids.append(service_id)
 
-                    service_period = transitfeed.ServicePeriod(service_id)
                     print("Service days: %s" % info[1:8])
                     for day in info[1:8]:
                         if day != "-":

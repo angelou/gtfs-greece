@@ -107,10 +107,11 @@ for route_url in route_urls:
             print("service_days: %s" % service_days)
 
             service_id = "%s-%s" % (route_id, "".join(service_days))
+            service_period = transitfeed.ServicePeriod(service_id)
+
             if service_id not in service_ids:
                 service_ids.append(service_id)
 
-                service_period = transitfeed.ServicePeriod(service_id)
                 for day in service_days:
                     service_period.SetDayOfWeekHasService(int(day))
 
