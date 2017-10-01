@@ -37,8 +37,7 @@ for route_link in route_links:
     href = route_link.get_attribute("href")
     route_urls.append(href)
 
-# Leave the last link out, it refers to local buses
-# and the data is not presented in the same format
+
 
 station_list = []
 station_locations = []
@@ -47,7 +46,9 @@ durations = {}
 service_ids = []
 route_ids = []
 
-for url in route_urls[:5]:
+# Leave the last link out, it refers to local buses
+# and the data is not presented in the same format
+for url in route_urls[:-1]:
     print("Fetching %s" % url)
     driver.get(url)
 
@@ -161,7 +162,11 @@ for url in route_urls[:5]:
             else:
                 duration = durations[route_id]
 
-            time1 = datetime.datetime.strptime(departure_time, "%H:%M")
+            try:
+                time1 = datetime.datetime.strptime(departure_time, "%H:%M")
+            except ValueError:
+                continue
+
             trip.AddStopTime(departure_obj, stop_time=time1.strftime("%H:%M:%S"))
 
             # Add stop times for any intermediate stops
