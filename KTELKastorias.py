@@ -84,7 +84,7 @@ for url in route_urls:
             station_locations.append(departure_location)
             station_objects.append(departure_obj)
         else:
-            departure_object = station_objects[station_list.index(departure_stop)]
+            departure_obj = station_objects[station_list.index(departure_stop)]
             departure_location = station_locations[station_list.index(departure_stop)]
 
         if destination_stop not in station_list:
@@ -119,7 +119,7 @@ for url in route_urls:
             service_id = route_id + "-"
             for td_index, td in enumerate(tds[1:]):
                 if td.text.strip():
-                    service_id = service_id + str(td_index)
+                    service_id += str(td_index)
 
             service_period = transitfeed.ServicePeriod(service_id)
 

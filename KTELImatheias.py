@@ -89,7 +89,7 @@ for url in route_urls[:-1]:
         for td_index, td in enumerate(tds[1:]):
             try:
                 td.find_element_by_xpath("i[@class='fa fa-check']")
-                service_id = service_id + str(td_index)
+                service_id += str(td_index)
             except:
                 pass
 

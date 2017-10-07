@@ -21,9 +21,9 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "MakedoniaIntercity", \
-                   name = "Macedonia Intercity Bus Station", \
-                   timezone = "Europe/Athens", \
+schedule.AddAgency(agency_id = "MakedoniaIntercity",
+                   name = "Macedonia Intercity Bus Station",
+                   timezone = "Europe/Athens",
                    url = "http://ktelmacedonia.gr")
 
 station_list = []

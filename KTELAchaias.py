@@ -24,9 +24,9 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "KtelAchaias", \
-                   name = "KTEL of Achaia Perfecture", \
-                   timezone = "Europe/Athens", \
+schedule.AddAgency(agency_id = "KtelAchaias",
+                   name = "KTEL of Achaia Perfecture",
+                   timezone = "Europe/Athens",
                    url = "http://www.ktelachaias.gr")
 
 
@@ -88,7 +88,7 @@ for route_url in route_urls:
             station_locations.append(departure_location)
             station_objects.append(departure_obj)
         else:
-            departure_object = station_objects[station_list.index(departure_stop)]
+            departure_obj = station_objects[station_list.index(departure_stop)]
             departure_location = station_locations[station_list.index(departure_stop)]
 
         if destination_stop not in station_list:

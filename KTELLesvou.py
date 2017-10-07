@@ -20,9 +20,9 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "KTELLesvou", \
-                   name = "Intercity Buses of Lesvos", \
-                   timezone = "Europe/Athens", \
+schedule.AddAgency(agency_id = "KTELLesvou",
+                   name = "Intercity Buses of Lesvos",
+                   timezone = "Europe/Athens",
                    url = "http://www.ktel-lesvou.gr")
 
 
@@ -34,8 +34,8 @@ print("Station A: %s" % first_stop_text)
 first_stop_location = geolocator.geocode(first_stop_text.encode("utf-8") + " Mytilini, Greece")
 print("Location for Station A: %s, %s" % (first_stop_location.latitude, first_stop_location.longitude))
 
-first_stop_obj = schedule.AddStop(lng = first_stop_location.longitude, \
-                                  lat = first_stop_location.latitude, \
+first_stop_obj = schedule.AddStop(lng = first_stop_location.longitude,
+                                  lat = first_stop_location.latitude,
                                   name = first_stop_text,
                                   stop_id = first_stop_text.upper())
 
@@ -70,13 +70,13 @@ for route_url in route_urls:
 
     print("Location for Station B: %s, %s" % (location.latitude, location.longitude))
 
-    stop_obj = schedule.AddStop(lng = location.longitude, \
-                                lat = location.latitude, \
+    stop_obj = schedule.AddStop(lng = location.longitude,
+                                lat = location.latitude,
                                 name = stop_text,
                                 stop_id = stop_text.upper())
 
-    route = schedule.AddRoute(short_name = "", \
-                              long_name = first_stop_text.upper() + "-" + stop_text.upper(), \
+    route = schedule.AddRoute(short_name = "",
+                              long_name = first_stop_text.upper() + "-" + stop_text.upper(),
                               route_type = "Bus")
 
     for route_direction in range(1,3):

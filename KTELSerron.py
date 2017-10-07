@@ -20,9 +20,9 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "KTELSerron", \
-                   name = "Intercity Buses of Lesvos", \
-                   timezone = "Europe/Athens", \
+schedule.AddAgency(agency_id = "KTELSerron",
+                   name = "Intercity Buses of Lesvos",
+                   timezone = "Europe/Athens",
                    url = "http://www.ktelserron.gr")
 
 
@@ -91,8 +91,8 @@ for destination_index, destination_in_list in enumerate(destinations):
         route_id = departure + "-" + destination + route_note.text.encode("utf-8")
         print("route_id: %s" % route_id)
 
-        route = schedule.AddRoute(short_name = "", \
-                                  long_name = route_id.upper(), \
+        route = schedule.AddRoute(short_name = "",
+                                  long_name = route_id.upper(),
                                   route_type = "Bus")
 
         # Extract the route info
