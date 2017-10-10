@@ -53,13 +53,19 @@ for url in route_urls:
     driver.get(url)
 
     # Retrieve directions
-    directionA = driver.find_element_by_xpath("//div[@class='moduletable ']/h3")
-    directionB = driver.find_element_by_xpath("//div[@class='moduletable ']/div[@class='custom']/h3")
+    directionA = driver.find_element_by_xpath("//div[@class='moduletable ']/h3").text.strip().encode("utf-8")
+    directionB = driver.find_element_by_xpath("//div[@class='moduletable ']/div[@class='custom']/h3").text.strip().encode("utf-8")
     directions = [directionA, directionB]
     print("Found %s directions" % len(directions))
 
     for direction_index, direction in enumerate(directions):
-        route_id = direction.text.strip().encode("utf-8")
+        # For some routes, the return direction does not list all stops
+        # So, let's set it as a reverse list of the forward route
+        if direction_index == 1:
+            route_id = '-'.join(directions[0].split("-")[::-1])
+        else:
+            route_id = direction
+
         print("RouteID: %s" % route_id)
 
         route = schedule.AddRoute(short_name="",
