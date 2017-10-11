@@ -57,7 +57,12 @@ for url in route_urls:
         # Click on the tab to make trips visible
         tabs = driver.find_elements_by_xpath("//ul[@id='tabs']/li/a")
         print("Found %s tabs" % len(tabs))
-        tabs[direction_index].click()
+
+        try:
+            tabs[direction_index].click()
+        except selenium.common.exceptions.WebDriverException:
+            continue
+
 
         if direction == "red":
             route_id = driver.find_element_by_xpath("//div[@id='my-tab-content']/div[@id='%s']/h3" % direction).text.strip().encode("utf-8")
@@ -79,7 +84,7 @@ for url in route_urls:
 
         if departure_stop not in station_list:
             # departure_location = geolocator.geocode(departure_stop + ", Greece")
-            resp = gmaps.geocode(departure_stop + ", Korinthia Greece")
+            resp = gmaps.geocode(departure_stop + ", Κόρινθος, Ελλάδα")
 
             if not resp:
                 continue
@@ -99,7 +104,7 @@ for url in route_urls:
 
         if destination_stop not in station_list:
             # destination_location = geolocator.geocode(destination_stop + ", Greece")
-            resp = gmaps.geocode(destination_stop + ", Korinthia Greece")
+            resp = gmaps.geocode(destination_stop + ", Κόρινθος, Ελλάδα")
 
             if not resp:
                 continue
