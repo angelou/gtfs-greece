@@ -167,34 +167,36 @@ for url in route_urls:
             service_period.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
             schedule.AddServicePeriodObject(service_period)
 
-        trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
+        for service_time in service_days_times.keys():
 
-        departure_time = datetime.datetime.strptime(service_time, "%H:%M")
-        trip.AddStopTime(departure_obj, stop_time=departure_time.strftime("%H:%M:%S"))
+            trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
 
-        # Calculate the distance between departure and destination stops
-        duration_id = route_id
-        if duration_id not in durations:
-            resp = gmaps.distance_matrix(origins=departure_location,
-                                         destinations=destination_location,
-                                         mode='driving')
-            print(resp)
+            departure_time = datetime.datetime.strptime(service_time, "%H:%M")
+            trip.AddStopTime(departure_obj, stop_time=departure_time.strftime("%H:%M:%S"))
 
-            # Get duration in minutes
-            duration = resp['rows'][0]['elements'][0]['duration']['value'] / 60
+            # Calculate the distance between departure and destination stops
+            duration_id = route_id
+            if duration_id not in durations:
+                resp = gmaps.distance_matrix(origins=departure_location,
+                                             destinations=destination_location,
+                                             mode='driving')
+                print(resp)
 
-            durations[duration_id] = duration
-            print("Duration: %s" % duration)
+                # Get duration in minutes
+                duration = resp['rows'][0]['elements'][0]['duration']['value'] / 60
 
-        else:
-            duration = durations[duration_id]
+                durations[duration_id] = duration
+                print("Duration: %s" % duration)
 
-        print("Whole trip duration %s" % duration)
-        time2 = (departure_time + datetime.timedelta(minutes=duration)).strftime("%H:%M:%S")
-        if int(time2.split(":")[0]) < int(departure_time.strftime("%H:%M:%S").split(":")[0]):
-            time2 = str(24 + int(time2.split(":")[0])) + ":" + time2.split(":")[1] + ":00"
+            else:
+                duration = durations[duration_id]
 
-        trip.AddStopTime(destination_obj, stop_time=time2)
+            print("Whole trip duration %s" % duration)
+            time2 = (departure_time + datetime.timedelta(minutes=duration)).strftime("%H:%M:%S")
+            if int(time2.split(":")[0]) < int(departure_time.strftime("%H:%M:%S").split(":")[0]):
+                time2 = str(24 + int(time2.split(":")[0])) + ":" + time2.split(":")[1] + ":00"
+
+            trip.AddStopTime(destination_obj, stop_time=time2)
 
 
 schedule.Validate()

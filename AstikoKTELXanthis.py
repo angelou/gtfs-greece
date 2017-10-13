@@ -123,8 +123,6 @@ for route in routes:
             service_period.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
             schedule.AddServicePeriodObject(service_period)
 
-            trip_obj = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
-
             duration_id = route_id
             if duration_id not in durations:
                 resp = gmaps.distance_matrix(origins=departure_location,
@@ -142,6 +140,7 @@ for route in routes:
                 duration = durations[duration_id]
 
             for service_time in times:
+                trip_obj = route.AddTrip(schedule, headsign=route_id, service_period=service_period)
                 departure_time = datetime.datetime.strptime(service_time, "%H:%M")
                 trip_obj.AddStopTime(departure_obj, stop_time=departure_time.strftime("%H:%M:%S"))
 
