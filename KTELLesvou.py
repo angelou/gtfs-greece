@@ -13,6 +13,16 @@ import transitfeed
 driver = webdriver.Chrome()
 geolocator = Nominatim()
 
+days = {
+    0 : "Monday",
+    1 : "Tuesday",
+    2 : "Wednesday",
+    3 : "Thursday",
+    4 : "Friday",
+    5 : "Saturday",
+    6 : "Sunday"
+}
+
 url = "http://www.ktel-lesvou.gr/index.php?option=dromologia&new_lang=en"
 driver.get(url)
 
@@ -106,7 +116,10 @@ for route_url in route_urls:
             print("service_time: %s" % service_time)
             print("service_days: %s" % service_days)
 
-            service_id = "%s-%s" % (route_id, "".join(service_days))
+            service_id = route_id
+            for day in service_days:
+                service_id += "_" + days[int(day)]
+
             service_period = transitfeed.ServicePeriod(service_id)
 
             if service_id not in service_ids:
@@ -150,3 +163,5 @@ for route_url in route_urls:
 schedule.Validate()
 
 schedule.WriteGoogleTransitFeed(gtfs_file)
+
+driver.quit()

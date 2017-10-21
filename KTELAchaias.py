@@ -17,6 +17,16 @@ driver = webdriver.Chrome()
 geolocator = Nominatim()
 gmaps = googlemaps.Client(key='your-key-here')
 
+days = {
+    0 : "Δευτέρα",
+    1 : "Τρίτη",
+    2 : "Τετάρτη",
+    3 : "Πέμπτη",
+    4 : "Παρασκευή",
+    5 : "Σάββατο",
+    6 : "Κυριακή"
+}
+
 url = "http://www.ktelachaias.gr/?module=default&pages_id=5&lang=el"
 driver.get(url)
 
@@ -120,10 +130,10 @@ for route_url in route_urls:
             tds = trip.find_elements_by_xpath("td")
 
             # For every trip, retrieve the days it's in service
-            service_id = route_id + "-"
+            service_id = route_id
             for td_index, td in enumerate(tds[-1:-8:-1]):
                 if td.text.strip():
-                    service_id = service_id + str(7 - td_index - 1)
+                    service_id += "_" + days[7 - td_index - 1]
 
             service_period = transitfeed.ServicePeriod(service_id)
 

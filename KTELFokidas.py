@@ -17,6 +17,16 @@ driver = webdriver.Chrome()
 geolocator = Nominatim()
 gmaps = googlemaps.Client(key='your-key-here')
 
+days = {
+    0 : "Δευτέρα",
+    1 : "Τρίτη",
+    2 : "Τετάρτη",
+    3 : "Πέμπτη",
+    4 : "Παρασκευή",
+    5 : "Σάββατο",
+    6 : "Κυριακή"
+}
+
 url = "http://www.ktel-fokidas.gr/gr/routes"
 driver.get(url)
 
@@ -41,7 +51,7 @@ station_locations = []
 station_objects = []
 durations = {}
 
-for season_index, season in enumerate(seasons[2:]):
+for season_index, season in enumerate(seasons[1:]):
 
     # For every season, retrieve the route URLs
     _season = driver.find_elements_by_xpath("//div[@class='moduletable']")[season_index]
@@ -98,7 +108,6 @@ for season_index, season in enumerate(seasons[2:]):
             print("Destination: %s" % destination_stop)
 
             if departure_stop not in station_list:
-                # departure_location = geolocator.geocode(departure_stop + ", Greece")
                 resp = gmaps.geocode(departure_stop + ", Greece")
 
 
@@ -119,7 +128,6 @@ for season_index, season in enumerate(seasons[2:]):
                 departure_location = station_locations[station_list.index(departure_stop)]
 
             if destination_stop not in station_list:
-                # destination_location = geolocator.geocode(destination_stop + ", Greece")
                 resp = gmaps.geocode(destination_stop + ", Greece")
 
                 if not resp:
@@ -146,10 +154,10 @@ for season_index, season in enumerate(seasons[2:]):
                 tds = trip.find_elements_by_xpath("td")
 
                 # For every trip, retrieve the days it's in service
-                service_id = route_id + "-"
+                service_id = route_id
                 for td_index, td in enumerate(tds[1:]):
                     if td.text.strip():
-                        service_id = service_id + str(td_index)
+                        service_id += "_" + days[td_index]
 
                 service_period = transitfeed.ServicePeriod(service_id)
 

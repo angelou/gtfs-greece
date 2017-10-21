@@ -14,8 +14,18 @@ import time
 import json
 
 driver = webdriver.Chrome()
-geolocator = Nominatim()
+
 gmaps = googlemaps.Client(key='your-key-here')
+
+days = {
+    0 : "Δευτέρα",
+    1 : "Τρίτη",
+    2 : "Τετάρτη",
+    3 : "Πέμπτη",
+    4 : "Παρασκευή",
+    5 : "Σάββατο",
+    6 : "Κυριακή"
+}
 
 url = "http://www.ktelmessinias.gr/?module=default&pages_id=44&lang=el"
 driver.get(url)
@@ -85,7 +95,6 @@ for url in route_urls[1:]:
 
 
         if departure_stop not in station_list:
-            # departure_location = geolocator.geocode(departure_stop + ", Greece")
             resp = gmaps.geocode(departure_stop + ", Greece")
 
             if not resp:
@@ -143,10 +152,10 @@ for url in route_urls[1:]:
                 continue
 
             # For every trip, retrieve the days it's in service
-            service_id = route_id + "-"
+            service_id = route_id
             for td_index, td in enumerate(tds[1:]):
                 if td.text.strip():
-                    service_id += str(td_index)
+                    service_id += "_" + days[td_index]
 
             service_period = transitfeed.ServicePeriod(service_id)
 

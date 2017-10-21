@@ -14,8 +14,17 @@ import time
 driver = webdriver.Chrome()
 geolocator = Nominatim()
 
+days = {
+    1 : "Monday",
+    2 : "Tuesday",
+    3 : "Wednesday",
+    4 : "Thursday",
+    5 : "Friday",
+    6 : "Saturday",
+    7 : "Sunday"
+}
+
 start_url = "http://ktelmacedonia.gr/en/routes/tid=%s"
-# start_url = "http://ktelmacedonia.gr/gr/routes/tid=%s"
 
 gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
@@ -134,8 +143,11 @@ for route_id in range(1, 40):
                     print("### PROBLEM WITH LINE ###")
                     continue
 
-                days = "".join(info[1:8]).replace("-","")
-                service_id =  "%s-%s" % (route_id, days)
+                service_id = route_id
+                for day in info[1:8]:
+                    if day != "-":
+                        service_id += "_" + days[int(day)]
+
                 service_period = transitfeed.ServicePeriod(service_id)
 
                 if service_id not in service_ids:

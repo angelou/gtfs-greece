@@ -12,6 +12,16 @@ import time
 driver = webdriver.Chrome()
 gmaps = googlemaps.Client(key='your-key-here')
 
+days = {
+    0 : "Δευτέρα",
+    1 : "Τρίτη",
+    2 : "Τετάρτη",
+    3 : "Πέμπτη",
+    4 : "Παρασκευή",
+    5 : "Σάββατο",
+    6 : "Κυριακή"
+}
+
 url = "http://ktel-zakynthos.gr/gr/routes"
 driver.get(url)
 
@@ -46,7 +56,7 @@ for url in route_urls:
 
     # Retrieve directions
     directions = driver.find_elements_by_xpath("//table")
-    print("Found %s tables" % len(directions))
+    print("Found %s directions" % len(directions))
 
     route_ids = driver.find_elements_by_xpath("//h4")
 
@@ -123,10 +133,10 @@ for url in route_urls:
             tds = trip.find_elements_by_xpath("td")
 
             # For every trip, retrieve the days it's in service
-            service_id = route_id + "-"
+            service_id = route_id
             for td_index, td in enumerate(tds[1:]):
                 if td.text.strip():
-                    service_id += str(td_index)
+                    service_id += "_" + days[td_index]
 
             service_period = transitfeed.ServicePeriod(service_id)
 
