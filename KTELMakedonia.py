@@ -30,8 +30,8 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "MakedoniaIntercity",
-                   name = "Macedonia Intercity Bus Station",
+schedule.AddAgency(agency_id = "KTELMakedonia",
+                   name = "Υπεραστικός Σταθμός ΚΤΕΛ Μακεδονία",
                    timezone = "Europe/Athens",
                    url = "http://ktelmacedonia.gr")
 
@@ -160,7 +160,7 @@ for route_id in range(1, 40):
 
                     today = datetime.datetime.today()
                     service_period.SetStartDate(today.strftime('%Y%m%d'))
-                    service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d'))
+                    service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
                     schedule.AddServicePeriodObject(service_period)
 
                 trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)

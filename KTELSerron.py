@@ -21,7 +21,7 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 schedule = transitfeed.Schedule()
 
 schedule.AddAgency(agency_id = "KTELSerron",
-                   name = "Intercity Buses of Lesvos",
+                   name = "ΥΠΕΡΑΣΤΙΚΟ ΚΤΕΛ Ν.ΣΕΡΡΩΝ",
                    timezone = "Europe/Athens",
                    url = "http://www.ktelserron.gr")
 
@@ -59,8 +59,8 @@ for destination_index, destination_in_list in enumerate(destinations):
             station_list.append(departure)
             departure_location = geolocator.geocode(departure + ", Greece")
 
-            departure_object = schedule.AddStop(lng = departure_location.longitude, \
-                                                lat = departure_location.latitude, \
+            departure_object = schedule.AddStop(lng = departure_location.longitude,
+                                                lat = departure_location.latitude,
                                                 name = departure,
                                                 stop_id = departure.upper())
 
@@ -78,8 +78,8 @@ for destination_index, destination_in_list in enumerate(destinations):
             destination_location = geolocator.geocode(destination_in_list.text.encode("utf-8") + ", Greece")
             print("%s, %s" % (destination_location.latitude, destination_location.longitude))
 
-            destination_object = schedule.AddStop(lng = destination_location.longitude, \
-                                                  lat = destination_location.latitude, \
+            destination_object = schedule.AddStop(lng = destination_location.longitude,
+                                                  lat = destination_location.latitude,
                                                   name = destination,
                                                   stop_id = destination.upper())
 
@@ -103,7 +103,7 @@ for destination_index, destination_in_list in enumerate(destinations):
 
         today = datetime.datetime.today()
         service_period.SetStartDate(today.strftime('%Y%m%d').encode("utf-8"))
-        service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d').encode("utf-8"))
+        service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d').encode("utf-8"))
 
         duration = routes_table.find_element_by_xpath("table[@class='table table-striped route-table']/tfoot/tr/td/div[1]/span[2]/span[2]").text.strip().encode("utf-8")
 
@@ -153,7 +153,7 @@ for destination_index, destination_in_list in enumerate(destinations):
             hours = [value.strip() for value in hour_info.split(separator)]
 
             for hour in hours:
-                if not re.match("\d{2}:\d{2}", hour):
+                if not re.match("^\d{2}:\d{2}$", hour):
                     continue
 
                 trip = route.AddTrip(schedule, headsign = route_id, service_period = service_period)
@@ -172,3 +172,5 @@ for destination_index, destination_in_list in enumerate(destinations):
 schedule.Validate()
 
 schedule.WriteGoogleTransitFeed(gtfs_file)
+
+driver.quit()

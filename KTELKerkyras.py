@@ -21,7 +21,7 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 schedule = transitfeed.Schedule()
 
 schedule.AddAgency(agency_id = "GreenBuses",
-                   name = "Intercity Buses of Kerkyra",
+                   name = "Υπεραστικό ΚΤΕΛ Ν.Κέρκυρας",
                    timezone = "Europe/Athens",
                    url = "https://greenbuses.gr")
 
@@ -32,7 +32,7 @@ route_areas = driver.find_elements_by_xpath("//div[@id='leftMenu']/details")
 print("Found %s route areas" % len(route_areas))
 
 # Click on all areas to expand the list of URLs for all routes
-for route_area in route_areas:
+for route_area in route_areas[::-1]:
     route_area.click()
 
 # Collect the list of URLs for all routes
@@ -107,7 +107,7 @@ for route_url in route_urls:
 
         today = datetime.datetime.today()
         service_period.SetStartDate(today.strftime('%Y%m%d').encode("utf-8"))
-        service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d').encode("utf-8"))
+        service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d').encode("utf-8"))
 
         hour_spans = driver.find_elements_by_xpath("//div[@class='%s']/p/span" % route_direction)
 

@@ -35,7 +35,7 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 schedule = transitfeed.Schedule()
 
 schedule.AddAgency(agency_id = "KTELKorinthias",
-                   name = "Suburban Transportations of Korinthia Perfecture",
+                   name = "ΚΤΕΛ Κορινθίας",
                    timezone = "Europe/Athens",
                    url = "https://www.ktelkorinthias.gr")
 
@@ -159,7 +159,7 @@ for url in route_urls:
 
                 today = datetime.datetime.today()
                 service_period.SetStartDate(today.strftime('%Y%m%d'))
-                service_period.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
+                service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
                 schedule.AddServicePeriodObject(service_period)
 
             trip_obj = route.AddTrip(schedule, headsign=route_id, service_period=service_period)

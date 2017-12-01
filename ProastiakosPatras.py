@@ -15,9 +15,9 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "ProastiakosPatras", \
-                   name = "Προστιακός Σιδηρόδρομος Πατρών", \
-                   timezone = "Europe/Athens", \
+schedule.AddAgency(agency_id = "ProastiakosPatras",
+                   name = "Προστιακός Σιδηρόδρομος Πατρών",
+                   timezone = "Europe/Athens",
                    url = "http://www.trainose.gr/επιβατικό-έργο/προαστιακός-σιδηρόδρομος/προαστιακός-πάτρας/")
 
 
@@ -135,7 +135,7 @@ for trip_id in range(0, 34):
 
     today = datetime.datetime.today()
     service_period.SetStartDate(today.strftime('%Y%m%d'))
-    service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d'))
+    service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
     schedule.AddServicePeriodObject(service_period)
 
     trip = route.AddTrip(schedule, headsign = service_id, service_period = service_period)

@@ -15,7 +15,7 @@ import time
 
 driver = webdriver.Chrome()
 geolocator = Nominatim()
-gmaps = googlemaps.Client(key='your-key-here')
+gmaps = googlemaps.Client(key='AIzaSyADGATpnvjfdQmY2ZPIM4Ry7WzXA2q_BR0')
 
 days = {
     0 : "Δευτέρα",
@@ -34,8 +34,8 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "KtelFokidas",
-                   name = "Urban and Suburban Transportations of Fokida Perfecture",
+schedule.AddAgency(agency_id = "KTELFokidas",
+                   name = "ΚΤΕΛ Ν.Φωκίδας Α.Ε.",
                    timezone = "Europe/Athens",
                    url = "http://www.ktel-fokidas.gr")
 
@@ -170,7 +170,7 @@ for season_index, season in enumerate(seasons[1:]):
 
                     today = datetime.datetime.today()
                     service_period.SetStartDate(today.strftime('%Y%m%d'))
-                    service_period.SetEndDate((today + datetime.timedelta(weeks=3*4)).strftime('%Y%m%d'))
+                    service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
                     schedule.AddServicePeriodObject(service_period)
 
                 trip = route.AddTrip(schedule, headsign=route_id, service_period=service_period)

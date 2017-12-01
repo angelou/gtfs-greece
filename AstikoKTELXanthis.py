@@ -25,7 +25,7 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 schedule = transitfeed.Schedule()
 
 schedule.AddAgency(agency_id = "AstikoKTELXanthis",
-                   name = "Urban Transportations of Ksanthi Perfecture",
+                   name = "Αστικό ΚΤΕΛ Ξάνθης Α.Ε.",
                    timezone = "Europe/Athens",
                    url = "http://www.astikoxanthis.gr")
 
@@ -120,7 +120,7 @@ for route in routes:
 
             today = datetime.datetime.today()
             service_period.SetStartDate(today.strftime('%Y%m%d'))
-            service_period.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
+            service_period.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
             schedule.AddServicePeriodObject(service_period)
 
             duration_id = route_id

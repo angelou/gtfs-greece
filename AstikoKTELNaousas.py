@@ -24,8 +24,8 @@ gtfs_file = os.path.basename(__file__).replace(".py",".zip")
 
 schedule = transitfeed.Schedule()
 
-schedule.AddAgency(agency_id = "AσtikoKTELNaousas",
-                   name = "Urban Transportations of Naousa Perfecture",
+schedule.AddAgency(agency_id = "AstikoKTELNaousas",
+                   name = "ΚΤΕΛ Αστικών Γραμμών Νάουσας",
                    timezone = "Europe/Athens",
                    url = "http://astna.gr")
 
@@ -128,9 +128,9 @@ for url in route_urls:
 
     today = datetime.datetime.today()
     service_period_workday.SetStartDate(today.strftime('%Y%m%d'))
-    service_period_workday.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
+    service_period_workday.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
     service_period_saturday.SetStartDate(today.strftime('%Y%m%d'))
-    service_period_saturday.SetEndDate((today + datetime.timedelta(weeks=3 * 4)).strftime('%Y%m%d'))
+    service_period_saturday.SetEndDate((today + datetime.timedelta(weeks=7*4)).strftime('%Y%m%d'))
     schedule.AddServicePeriodObject(service_period_workday)
     schedule.AddServicePeriodObject(service_period_saturday)
 
